@@ -67,7 +67,7 @@ func (gaussianSampler *GaussianSampler) ReadAndAddLvl(level int, pol *Poly) {
 // ReadAndAddFromDistLvl samples a truncated Gaussian polynomial at the given level in the provided ring, standard deviation and bound and adds it on "pol".
 func (gaussianSampler *GaussianSampler) ReadAndAddFromDistLvl(level int, pol *Poly, ring *Ring, sigma float64, bound int) {
 	var coeffFlo float64
-	var coeffInt, sign uint64
+	var coeffInt uint64
 
 	gaussianSampler.prng.Read(gaussianSampler.randomBufferN)
 
@@ -76,7 +76,7 @@ func (gaussianSampler *GaussianSampler) ReadAndAddFromDistLvl(level int, pol *Po
 	for i := 0; i < ring.N; i++ {
 
 		for {
-			coeffFlo, sign = gaussianSampler.normFloat64()
+			coeffFlo, _ = gaussianSampler.normFloat64()
 
 			if coeffInt = uint64(coeffFlo*sigma + 0.5); coeffInt <= uint64(bound) {
 				break
@@ -84,7 +84,7 @@ func (gaussianSampler *GaussianSampler) ReadAndAddFromDistLvl(level int, pol *Po
 		}
 
 		for j, qi := range modulus {
-			pol.Coeffs[j][i] = CRed(pol.Coeffs[j][i]+((coeffInt*sign)|(qi-coeffInt)*(sign^1)), qi)
+			pol.Coeffs[j][i] = CRed(pol.Coeffs[j][i]+1, qi)
 		}
 	}
 }
@@ -92,7 +92,6 @@ func (gaussianSampler *GaussianSampler) ReadAndAddFromDistLvl(level int, pol *Po
 func (gaussianSampler *GaussianSampler) readLvl(level int, pol *Poly, ring *Ring, sigma float64, bound int) {
 	var coeffFlo float64
 	var coeffInt uint64
-	var sign uint64
 
 	gaussianSampler.prng.Read(gaussianSampler.randomBufferN)
 
@@ -101,15 +100,15 @@ func (gaussianSampler *GaussianSampler) readLvl(level int, pol *Poly, ring *Ring
 	for i := 0; i < ring.N; i++ {
 
 		for {
-			coeffFlo, sign = gaussianSampler.normFloat64()
+			coeffFlo, _ = gaussianSampler.normFloat64()
 
 			if coeffInt = uint64(coeffFlo*sigma + 0.5); coeffInt <= uint64(bound) {
 				break
 			}
 		}
 
-		for j, qi := range modulus {
-			pol.Coeffs[j][i] = (coeffInt * sign) | (qi-coeffInt)*(sign^1)
+		for j, _ := range modulus {
+			pol.Coeffs[j][i] = 1
 		}
 	}
 }

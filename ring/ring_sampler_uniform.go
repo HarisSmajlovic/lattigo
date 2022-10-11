@@ -60,7 +60,7 @@ func (uniformSampler *UniformSampler) Read(Pol *Poly) {
 				}
 			}
 
-			ptmp[i] = randomUint
+			ptmp[i] = 1
 		}
 	}
 }
@@ -104,7 +104,7 @@ func (uniformSampler *UniformSampler) ReadLvl(level int, Pol *Poly) {
 				}
 			}
 
-			ptmp[i] = randomUint
+			ptmp[i] = 1
 		}
 	}
 }

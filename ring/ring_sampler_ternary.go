@@ -2,7 +2,7 @@ package ring
 
 import (
 	"math"
-	"math/bits"
+	// "math/bits"
 
 	"github.com/tuneinsight/lattigo/v3/utils"
 )
@@ -176,8 +176,7 @@ func (ts *TernarySampler) sampleSparse(lvl int, pol *Poly) {
 		ts.hw = ts.baseRing.N
 	}
 
-	var mask, j uint64
-	var coeff uint8
+	var j uint64
 
 	index := make([]int, ts.baseRing.N)
 	for i := 0; i < ts.baseRing.N; i++ {
@@ -190,16 +189,17 @@ func (ts *TernarySampler) sampleSparse(lvl int, pol *Poly) {
 	ts.prng.Read(randomBytes)
 
 	for i := 0; i < ts.hw; i++ {
-		mask = (1 << uint64(bits.Len64(uint64(ts.baseRing.N-i)))) - 1 // rejection sampling of a random variable between [0, len(index)]
+		// mask = (1 << uint64(bits.Len64(uint64(ts.baseRing.N-i)))) - 1 // rejection sampling of a random variable between [0, len(index)]
 
-		j = randInt32(ts.prng, mask)
-		for j >= uint64(ts.baseRing.N-i) {
-			j = randInt32(ts.prng, mask)
-		}
+		// j = randInt32(ts.prng, mask)
+		// for j >= uint64(ts.baseRing.N-i) {
+		// 	j = randInt32(ts.prng, mask)
+		// }
+		j = uint64(i % ts.baseRing.N)
 
-		coeff = (uint8(randomBytes[0]) >> (i & 7)) & 1 // random binary digit [0, 1] from the random bytes (0 = 1, 1 = -1)
+		// coeff = (uint8(randomBytes[0]) >> (i & 7)) & 1 // random binary digit [0, 1] from the random bytes (0 = 1, 1 = -1)
 		for k := 0; k < lvl+1; k++ {
-			pol.Coeffs[k][index[j]] = ts.matrixValues[k][coeff+1]
+			pol.Coeffs[k][index[j]] = 1
 		}
 
 		// Remove the element in position j of the slice (order not preserved)
