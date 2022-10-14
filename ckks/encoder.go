@@ -3,6 +3,7 @@
 package ckks
 
 import (
+	"os"
 	"fmt"
 	"math"
 	"math/big"
@@ -321,6 +322,31 @@ func (ecd *encoderComplex128) ShallowCopy() Encoder {
 	}
 }
 
+func log(name, path string, data []uint64) {
+	f, err := os.Create(path) // creating...
+	if err != nil {
+		fmt.Printf("error creating file: %v", err)
+		return
+	}
+	defer f.Close()
+
+	_, err = f.WriteString(name) // writing...
+	if err != nil {
+		fmt.Printf("error writing string: %v", err)
+	}
+	_, err = f.WriteString("\n") // writing...
+	if err != nil {
+		fmt.Printf("error writing string: %v", err)
+	}
+
+	for i := 0; i < len(data); i++ { // Generating...
+		_, err = f.WriteString(fmt.Sprintf("%d\n", data[i])) // writing...
+		if err != nil {
+			fmt.Printf("error writing string: %v", err)
+		}
+	}
+}
+
 // Embed is a generic method to encode a set of values on the target polyOut interface.
 // This method it as the core of the slot encoding.
 // values: values.(type) can be either []complex128 of []float64.
@@ -407,6 +433,9 @@ func (ecd *encoderComplex128) Embed(values interface{}, logSlots int, scale floa
 		}
 	case *ring.Poly:
 		complexToFixedPointCRT(p.Level(), ecd.values[:slots], scale, ecd.params.RingQ(), p.Coeffs, isRingStandard)
+
+		log("", "endoding.txt", p.Buff)
+
 		NttAndMontgomeryLvl(p.Level(), logSlots, ecd.params.RingQ(), montgomery, p)
 	default:
 		panic("cannot Embed: invalid polyOut.(Type) must be ringqp.Poly or *ring.Poly")
