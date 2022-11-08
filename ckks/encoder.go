@@ -434,7 +434,7 @@ func (ecd *encoderComplex128) Embed(values interface{}, logSlots int, scale floa
 	case *ring.Poly:
 		complexToFixedPointCRT(p.Level(), ecd.values[:slots], scale, ecd.params.RingQ(), p.Coeffs, isRingStandard)
 
-		log("", "endoding.txt", p.Buff)
+		log("", "_encoding.txt", p.Buff)
 
 		NttAndMontgomeryLvl(p.Level(), logSlots, ecd.params.RingQ(), montgomery, p)
 	default:
